@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'bundler/setup'
+require 'yaml'
 require 'net/http'
 require 'zip'
 require 'algoliasearch'
@@ -111,9 +112,13 @@ end
 
 Dir.mkdir(ZIP_DIRECTORY) if !Dir.exist?(ZIP_DIRECTORY)
 
+# Load algolia conf which is located at the same place as the current script
+algoliaConf = YAML.load_file("#{File.dirname(__FILE__)}/algolia.yml")
+
 # Connect to the Algolia account
-Algolia.init :application_id => AL_APP_ID, :api_key => AL_API_KEY
-index = Algolia::Index.new(AL_INDEX)
+Algolia.init :application_id => algoliaConf["appId"], :api_key => algoliaConf["apiKey"]
+
+index = Algolia::Index.new(algoliaConf["indexName"])
 
 batch = Array.new
 
@@ -122,7 +127,7 @@ load_data_from_geonames do |data|
 
   batch << data
 
-  if batch.length >= AL_BATCH_SIZE
+  if batch.length >= algoliaConf["batchSize"]
     index.add_objects(batch)
     batch = Array.new
   end

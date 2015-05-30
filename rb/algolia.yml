@@ -1,0 +1,4 @@
+appId: ""
+apiKey: ""
+indexName: "Cities"
+batchSize: 1000

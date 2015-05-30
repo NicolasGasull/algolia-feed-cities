@@ -38,10 +38,9 @@ def download_country_data(country)
   target_zip = "#{ZIP_DIRECTORY}/#{country}.zip"
 
   if !File.exist?(target_zip)
-
+    # Download the zip only when necessary
     puts "Downloading #{GEONAMES_DOMAIN}/#{GEONAMES_PATH}/#{country} ..."
 
-    # Download the zip only when necessary
     Net::HTTP.start(GEONAMES_DOMAIN) do |http|
 
       resp = http.get("/#{GEONAMES_PATH}/#{country}.zip")

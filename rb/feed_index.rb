@@ -16,14 +16,14 @@ AL_APP_ID = "977AC8JAJ4"
 AL_API_KEY = "3fc0b1f5c61a608f18e25c706186960c"
 AL_BATCH_SIZE = 1000
 
-# Returns a list of countries from the countries file (one country code per line)
+# Pipes countries from the countries file (one country code per line)
 def list_country_codes
   File.foreach(COUNTRIES_FILE) do |country|
     yield country.gsub(/\r?\n$/, "")
   end
 end
 
-# Returns a headers list from the headers file (one header name per line)
+# Returns a list of headers from the headers file (one header name per line)
 # Params:
 # +headers_file+:: string containing the path to the headers file
 def define_headers(headers_file)

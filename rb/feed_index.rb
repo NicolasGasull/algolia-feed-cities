@@ -141,6 +141,11 @@ def load_data_from_geonames
 
       if place_data["featureClass"] == CITY_FEATURE
 
+        place_data["_geoloc"] = {
+          "lat" => place_data["latitude"],
+          "lng" => place_data["longitude"],
+        }
+
         place_data["country"] = {
           "code" => country["ISO"],
           "name" => country["Country"],
@@ -149,6 +154,12 @@ def load_data_from_geonames
           "capital" => country["Capital"],
           "continent" => country["Continent"],
         }
+
+        # Remove copied keys
+        place_data.tap do |hs|
+          hs.delete("latitude")
+          hs.delete("longitude")
+        end
 
         yield place_data
       end

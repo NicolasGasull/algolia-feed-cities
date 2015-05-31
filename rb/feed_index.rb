@@ -47,11 +47,15 @@ def download_country_data(country_code)
 
     Net::HTTP.start(GEONAMES_DOMAIN) do |http|
 
-      resp = http.get("/#{GEONAMES_PATH}/#{country_code}.zip")
+      res = http.get("/#{GEONAMES_PATH}/#{country_code}.zip")
 
-      open(target_zip, "wb") do |file|
-          file.write(resp.body)
-          puts "Wrote #{target_zip}"
+      if res.code == 200
+        open(target_zip, "wb") do |file|
+            file.write(res.body)
+            puts "Wrote #{target_zip}"
+        end
+      else
+        puts "WARN: Could not fetch #{target_zip}, got code #{res.code}: #{res.message}"
       end
     end
   end
@@ -63,16 +67,21 @@ end
 # +country_code+:: the country code
 def read_country_zip(country_code)
 
-  Zip::File.open("#{ZIP_DIRECTORY}/#{country_code}.zip") do |zip_file|
-    # Read the right txt file from the zip file
-    raw_data_file = zip_file.glob("#{country_code}.txt").first
-    puts "Reading #{raw_data_file}"
+  target_zip = "#{ZIP_DIRECTORY}/#{country_code}.zip"
 
-    # Read in a non blocking way
-    readable = raw_data_file.get_input_stream.select
+  if File.exist?(target_zip)
 
-    readable.each do |line|
-      yield line
+    Zip::File.open("#{ZIP_DIRECTORY}/#{country_code}.zip") do |zip_file|
+      # Read the right txt file from the zip file
+      raw_data_file = zip_file.glob("#{country_code}.txt").first
+      puts "Reading #{raw_data_file}"
+
+      # Read in a non blocking way
+      readable = raw_data_file.get_input_stream.select
+
+      readable.each do |line|
+        yield line
+      end
     end
   end
 end
